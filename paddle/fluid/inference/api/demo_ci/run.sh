@@ -122,5 +122,24 @@ D
       exit 1
     fi
   fi
+
+  # --------capi mobilenet demo------
+  if [ $TEST_GPU_CPU == ON ]; then
+    rm -rf *
+    cmake .. -DPADDLE_LIB=${inference_install_dir} \
+      -DWITH_MKL=$TURN_ON_MKL \
+      -DDEMO_NAME=capi_mobilenet_demo \
+      -DWITH_GPU=$TEST_GPU_CPU \
+      -DWITH_STATIC_LIB=$WITH_STATIC_LIB \
+    make -j
+    ./capi_mobilenet_demo \
+      --modeldir=$DATA_DIR/mobilenet/model \
+      --data=$DATA_DIR/mobilenet/data.txt \
+      --refer=$DATA_DIR/mobilenet/result.txt 
+    if [ $? -ne 0 ]; then
+      echo "trt demo capi_mobilenet_demo runs fail."
+      exit 1
+    fi
+  fi
 done
 set +x

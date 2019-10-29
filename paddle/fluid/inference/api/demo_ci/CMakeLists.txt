@@ -34,6 +34,8 @@ include_directories("${PADDLE_LIB_THIRD_PARTY_PATH}xxhash/include")
 include_directories("${PADDLE_LIB_THIRD_PARTY_PATH}zlib/include")
 include_directories("${PADDLE_LIB}/third_party/boost")
 include_directories("${PADDLE_LIB}/third_party/eigen3")
+include_directories("${PADDLE_LIB}../paddle/fluid/inference/capi/")
+include_directories("${PADDLE_LIB}../paddle/fluid/inference/api/demo_ci/")
 
 link_directories("${PADDLE_LIB_THIRD_PARTY_PATH}zlib/lib")
 link_directories("${PADDLE_LIB_THIRD_PARTY_PATH}protobuf/lib")
@@ -41,6 +43,8 @@ link_directories("${PADDLE_LIB_THIRD_PARTY_PATH}glog/lib")
 link_directories("${PADDLE_LIB_THIRD_PARTY_PATH}gflags/lib")
 link_directories("${PADDLE_LIB_THIRD_PARTY_PATH}xxhash/lib")
 link_directories("${PADDLE_LIB}/paddle/lib")
+link_directories("${PADDLE_LIB}/paddle/fluid/inference/capi/")
+
 
 if (WIN32)
   add_definitions("/DGOOGLE_GLOG_DLL_DECL=")
