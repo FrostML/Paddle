@@ -199,7 +199,7 @@ bool PD_PredictorZeroCopyRun(const PD_AnalysisConfig* config,
         std::accumulate(output_i.shape, output_i.shape + output_i.shape_size, 1,
                         std::multiplies<int>());
     out_data.resize(out_num * SizeOfPDtype(output_i.dtype));
-    output_t->copy_to_cpu(static_cast<float*>(out_data.data()));
+    output_t->copy_to_cpu(reinterpret_cast<float*>(out_data.data()));
     // memmove(static_cast<char*>(output_i->data), out_data.data(),
     //         out_num * sizeof(char));
     std::copy_n(out_data.data(), out_num * sizeof(uint8_t),
