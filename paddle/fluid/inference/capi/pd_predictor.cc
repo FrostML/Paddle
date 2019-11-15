@@ -202,8 +202,9 @@ bool PD_PredictorZeroCopyRun(const PD_AnalysisConfig* config,
     output_t->copy_to_cpu(reinterpret_cast<float*>(out_data.data()));
     // memmove(static_cast<char*>(output_i->data), out_data.data(),
     //         out_num * sizeof(char));
-    std::copy_n(out_data.data(), out_num * sizeof(uint8_t),
-                static_cast<float*>(output_i.data));
+    std::copy_n(out_data.data(),
+                out_num * SizeOfPDtype(output_i.dtype) * sizeof(uint8_t),
+                static_cast<uint8_t*>(output_i.data));
     // LOG(INFO) << out_data[0];
   }
   return true;
