@@ -35,7 +35,7 @@ namespace {
   _ForEachDataTypeHelper_(callback, uint8_t, PD_UINT8);
 
 template <typename Visitor>
-inline void VisitDataType(PD_DataType type, Visitor visitor) {
+inline int VisitDataType(PD_DataType type, Visitor visitor) {
 #define VisitDataTypeCallback(cpp_type, pd_type) \
   do {                                           \
     if (type == pd_type) {                       \
