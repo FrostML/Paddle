@@ -169,14 +169,14 @@ bool PD_PredictorZeroCopyRun(const PD_AnalysisConfig* config,
                   PD_ZeroCopyFunctor(&output_i, std::move(output_t.get())));*/
     std::vector<char> out_data;
     int out_num =
-        std::accumulate(output_i->shape, output_i->shape + output_i->shape_size,
-                        1, std::multiplies<int>());
+        std::accumulate(output_i.shape, output_i.shape + output_i.shape_size, 1,
+                        std::multiplies<int>());
     out_data.resize(out_num * SizeOfPDtype(output_i.dtype));
     output_t->copy_to_cpu(out_data.data());
     // memmove(static_cast<char*>(output_i->data), out_data.data(),
     //         out_num * sizeof(char));
     std::copy_n(out_data.data(), out_num * sizeof(char),
-                static_cast<char*>(output_i->data));
+                static_cast<char*>(output_i.data));
     // LOG(INFO) << out_data[0];
   }
   return true;
