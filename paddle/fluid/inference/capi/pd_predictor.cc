@@ -39,8 +39,7 @@ inline void VisitDataType(PD_DataType type, Visitor visitor) {
 #define VisitDataTypeCallback(cpp_type, pd_type) \
   do {                                           \
     if (type == pd_type) {                       \
-      visitor.template apply<cpp_type>();        \
-      return;                                    \
+      return visitor.template apply<cpp_type>(); \
     }                                            \
   } while (0)
 
@@ -49,7 +48,22 @@ inline void VisitDataType(PD_DataType type, Visitor visitor) {
   PADDLE_THROW("Not supported %d", type);
 }
 
-struct PD_ZeroCopyFunctor {
+/*template <typename Visitor>
+inline void VisitDataType(PD_DataType type, Visitor visitor) {
+#define VisitDataTypeCallback(cpp_type, pd_type) \
+  do {                                           \
+    if (type == pd_type) {                       \
+      visitor.template apply<cpp_type>();        \
+      return;                                    \
+    }                                            \
+  } while (0)
+
+  _ForEachDataType_(VisitDataTypeCallback);
+#undef VisitDataTypeCallback
+  PADDLE_THROW("Not supported %d", type);
+}*/
+
+/*struct PD_ZeroCopyFunctor {
   PD_ZeroCopyData* output_i;
   paddle::ZeroCopyTensor* output_t;
 
@@ -71,7 +85,20 @@ struct PD_ZeroCopyFunctor {
     //             static_cast<OutT*>(output_i->data));
     LOG(INFO) << out_data[0];
   }
+};*/
+
+struct PD_ZeroCopyFunctor {
+  PD_ZeroCopyFunctor() {}
+
+  template <typename OutT>
+  int apply() {
+    return sizeof(OutT);
+  }
 };
+
+int SizeOfPDtype(PD_DataType type) {
+  return VisitDataType(output_i.dtype, PD_ZeroCopyFunctor());
+}
 
 }  // namespace
 
