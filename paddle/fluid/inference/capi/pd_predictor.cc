@@ -153,8 +153,8 @@ bool PD_PredictorZeroCopyRun(const PD_AnalysisConfig* config,
     tensor_shape.assign(inputs[i].shape,
                         inputs[i].shape + inputs[i].shape_size);
     input_t->Reshape(tensor_shape);
-    input_t->copy_from_cpu(static_cast<uint8_t*>(inputs[i].data));
-    /*switch (inputs[i].dtype) {
+    // input_t->copy_from_cpu(static_cast<uint8_t*>(inputs[i].data));
+    switch (inputs[i].dtype) {
       case PD_FLOAT32:
         input_t->copy_from_cpu(static_cast<float*>(inputs[i].data));
         break;
@@ -170,7 +170,7 @@ bool PD_PredictorZeroCopyRun(const PD_AnalysisConfig* config,
       default:
         CHECK(false) << "Unsupport data type.";
         break;
-    }*/
+    }
   }
   CHECK(predictor->ZeroCopyRun());
   auto output_names = predictor->GetOutputNames();
