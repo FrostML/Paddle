@@ -97,7 +97,7 @@ struct PD_ZeroCopyFunctor {
 };
 
 int SizeOfPDtype(PD_DataType type) {
-  return VisitDataType(output_i.dtype, PD_ZeroCopyFunctor());
+  return VisitDataType(type, PD_ZeroCopyFunctor());
 }
 
 }  // namespace
