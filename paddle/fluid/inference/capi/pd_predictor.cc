@@ -126,7 +126,8 @@ bool PD_PredictorZeroCopyRun(const PD_AnalysisConfig* config,
     tensor_shape.assign(inputs[i].shape,
                         inputs[i].shape + inputs[i].shape_size);
     input_t->Reshape(tensor_shape);
-    switch (inputs[i].dtype) {
+    input_t->copy_from_cpu(static_cast<char*>(inputs[i].data));
+    /*switch (inputs[i].dtype) {
       case PD_FLOAT32:
         input_t->copy_from_cpu(static_cast<float*>(inputs[i].data));
         break;
@@ -142,7 +143,7 @@ bool PD_PredictorZeroCopyRun(const PD_AnalysisConfig* config,
       default:
         CHECK(false) << "Unsupport data type.";
         break;
-    }
+    }*/
   }
   CHECK(predictor->ZeroCopyRun());
   auto output_names = predictor->GetOutputNames();
@@ -164,8 +165,19 @@ bool PD_PredictorZeroCopyRun(const PD_AnalysisConfig* config,
                 output_i.shape);
     // output_i.shape = output_shape.data();
     output_i.shape_size = output_shape.size();
-    VisitDataType(output_i.dtype,
-                  PD_ZeroCopyFunctor(&output_i, std::move(output_t.get())));
+    /*VisitDataType(output_i.dtype,
+                  PD_ZeroCopyFunctor(&output_i, std::move(output_t.get())));*/
+    std::vector<char> out_data;
+    int out_num =
+        std::accumulate(output_i->shape, output_i->shape + output_i->shape_size,
+                        1, std::multiplies<int>());
+    out_data.resize(out_num * SizeOfPDtype(output_i.dtype));
+    output_t->copy_to_cpu(out_data.data());
+    // memmove(static_cast<char*>(output_i->data), out_data.data(),
+    //         out_num * sizeof(char));
+    std::copy_n(out_data.data(), out_num * sizeof(char),
+                static_cast<char*>(output_i->data));
+    // LOG(INFO) << out_data[0];
   }
   return true;
 }
