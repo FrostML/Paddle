@@ -203,7 +203,7 @@ bool PD_PredictorZeroCopyRun(const PD_AnalysisConfig* config,
     // memmove(static_cast<char*>(output_i->data), out_data.data(),
     //         out_num * sizeof(char));
     std::copy_n(out_data.data(), out_num * sizeof(uint8_t),
-                static_cast<uint8_t*>(output_i.data));
+                static_cast<float*>(output_i.data));
     // LOG(INFO) << out_data[0];
   }
   return true;
