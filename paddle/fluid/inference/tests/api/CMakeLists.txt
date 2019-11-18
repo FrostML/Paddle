@@ -305,7 +305,16 @@ if(WITH_GPU AND TENSORRT_FOUND)
             ARGS --infer_model=${TRT_MODEL_INSTALL_DIR}/trt_inference_test_models)
     inference_analysis_test(test_analyzer_capi SRCS analyzer_capi_tester.cc
             EXTRA_DEPS ${INFERENCE_EXTRA_DEPS} paddle_fluid_c
-            ARGS --infer_model=${CAPI_MODEL_INSTALL_DIR}/trt_inference_test_models)
+            ARGS --infer_model=${TRT_MODEL_INSTALL_DIR}/trt_inference_test_models)
+    endif()
+
+    set(TRT_MODEL_QUANT_RESNET_DIR "${INFERENCE_DEMO_INSTALL_DIR}/quant_small_model")
+    if (NOT EXISTS ${TRT_MODEL_QUANT_RESNET_DIR})
+        inference_download_and_uncompress(${INFERENCE_DEMO_INSTALL_DIR} ${INFERENCE_URL}/tensorrt_test "quant_small_model.tar.gz")
+    endif()
+    inference_analysis_test(trt_quant_int8_test SRCS trt_quant_int8_test.cc
+            EXTRA_DEPS ${INFERENCE_EXTRA_DEPS}
+            ARGS --infer_model=${TRT_MODEL_QUANT_RESNET_DIR})
 endif()
 
 inference_analysis_test(test_analyzer_capi_pd_tensor SRCS analyzer_capi_pd_tensor_tester.cc
