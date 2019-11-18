@@ -46,7 +46,9 @@ inline void VisitDataType(PD_DataType type, Visitor visitor) {
 
   _DataType_(VisitDataTypeCallback);
 #undef VisitDataTypeCallback
-  PADDLE_THROW("Not supported data type for c-api inference %d", type);
+  LOG(ERROR)
+      << "Unsupported data type. The Predictor will treat input as float. ";
+  visitor.template apply<float>();
 }
 
 struct PD_ZeroCopyFunctor {
