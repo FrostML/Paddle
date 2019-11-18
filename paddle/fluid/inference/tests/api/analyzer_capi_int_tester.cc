@@ -18,7 +18,6 @@ limitations under the License. */
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <typeinfo>
 #include <vector>
 #include "paddle/fluid/inference/capi/c_api.h"
 #include "paddle/fluid/inference/tests/api/tester_helper.h"
