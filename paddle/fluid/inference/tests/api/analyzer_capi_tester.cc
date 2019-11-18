@@ -27,7 +27,6 @@ namespace paddle {
 namespace inference {
 namespace analysis {
 
-template <typename T>
 void zero_copy_run() {
   std::string model_dir = FLAGS_infer_model + "/mobilenet";
   PD_AnalysisConfig *config = PD_NewAnalysisConfig();
@@ -46,7 +45,7 @@ void zero_copy_run() {
   const int channels = 3;
   const int height = 224;
   const int width = 224;
-  T input[batch_size * channels * height * width] = {0};
+  float input[batch_size * channels * height * width] = {0};
 
   int shape[4] = {batch_size, channels, height, width};
   int shape_size = 4;
@@ -55,18 +54,7 @@ void zero_copy_run() {
   PD_ZeroCopyData *inputs = new PD_ZeroCopyData;
   PD_ZeroCopyData *outputs = new PD_ZeroCopyData;
   inputs->data = static_cast<void *>(input);
-  std::string nm = typeid(T).name();
-  if ("f" == nm) {
-    inputs->dtype = PD_FLOAT32;
-  } else if ("i" == nm) {
-    inputs->dtype = PD_INT32;
-  } else if ("x" == nm) {
-    inputs->dtype = PD_INT64;
-  } else if ("h" == nm) {
-    inputs->dtype = PD_UINT8;
-  } else {
-    CHECK(false) << "Unsupport dtype. ";
-  }
+  inputs->dtype = PD_FLOAT32;
   inputs->name = new char[2];
   inputs->name[0] = 'x';
   inputs->name[1] = '\0';
@@ -80,7 +68,7 @@ void zero_copy_run() {
   delete[] outputs;
 }
 
-TEST(PD_ZeroCopyRun, zero_copy_run) { zero_copy_run<float>(); }
+TEST(PD_ZeroCopyRun, zero_copy_run) { zero_copy_run(); }
 
 #ifdef PADDLE_WITH_MKLDNN
 TEST(PD_AnalysisConfig, profile_mkldnn) {
