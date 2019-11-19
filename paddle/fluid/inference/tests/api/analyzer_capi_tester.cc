@@ -27,14 +27,16 @@ namespace inference {
 namespace analysis {
 
 void zero_copy_run() {
-  std::string model_dir = FLAGS_infer_model + "/mobilenet";
+  std::string model_dir = FLAGS_infer_model;
+  std::string prog_file = model_dir + "/model";
+  std::string params_file = model_dir + "/params";
   PD_AnalysisConfig *config = PD_NewAnalysisConfig();
   PD_DisableGpu(config);
   PD_SetCpuMathLibraryNumThreads(config, 10);
   PD_SwitchUseFeedFetchOps(config, false);
   PD_SwitchSpecifyInputNames(config, true);
   PD_SwitchIrDebug(config, true);
-  PD_SetModel(config, model_dir.c_str());  //, params_file1.c_str());
+  PD_SetModel(config, prog_file.c_str(), params_file.c_str());
   bool use_feed_fetch = PD_UseFeedFetchOpsEnabled(config);
   CHECK(!use_feed_fetch) << "NO";
   bool specify_input_names = PD_SpecifyInputName(config);
@@ -42,8 +44,8 @@ void zero_copy_run() {
 
   const int batch_size = 1;
   const int channels = 3;
-  const int height = 224;
-  const int width = 224;
+  const int height = 318;
+  const int width = 318;
   float input[batch_size * channels * height * width] = {0};
 
   int shape[4] = {batch_size, channels, height, width};
@@ -54,9 +56,12 @@ void zero_copy_run() {
   PD_ZeroCopyData *outputs = new PD_ZeroCopyData;
   inputs->data = static_cast<void *>(input);
   inputs->dtype = PD_FLOAT32;
-  inputs->name = new char[2];
-  inputs->name[0] = 'x';
-  inputs->name[1] = '\0';
+  inputs->name = new char[5];
+  inputs->name[0] = 'd';
+  inputs->name[1] = 'a';
+  inputs->name[2] = 't';
+  inputs->name[3] = 'a';
+  inputs->name[4] = '\0';
   LOG(INFO) << inputs->name;
   inputs->shape = shape;
   inputs->shape_size = shape_size;
@@ -71,7 +76,9 @@ TEST(PD_ZeroCopyRun, zero_copy_run) { zero_copy_run(); }
 
 #ifdef PADDLE_WITH_MKLDNN
 TEST(PD_AnalysisConfig, profile_mkldnn) {
-  std::string model_dir = FLAGS_infer_model + "/mobilenet";
+  std::string model_dir = FLAGS_infer_model;
+  std::string prog_file = model_dir + "/model";
+  std::string params_file = model_dir + "/params";
   PD_AnalysisConfig *config = PD_NewAnalysisConfig();
   PD_DisableGpu(config);
   PD_SetCpuMathLibraryNumThreads(config, 10);
@@ -85,7 +92,7 @@ TEST(PD_AnalysisConfig, profile_mkldnn) {
   bool quantizer_enable = PD_MkldnnQuantizerEnabled(config);
   CHECK(quantizer_enable) << "NO";
   PD_SetMkldnnCacheCapacity(config, 0);
-  PD_SetModel(config, model_dir.c_str());
+  PD_SetModel(config, prog_file.c_str(), params_file.c_str());
   PD_EnableAnakinEngine(config);
   bool anakin_enable = PD_AnakinEngineEnabled(config);
   LOG(INFO) << anakin_enable;
