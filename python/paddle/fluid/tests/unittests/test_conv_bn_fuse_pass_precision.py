@@ -57,15 +57,7 @@ class TestConvBnFusePrecision(unittest.TestCase):
         print(type(output))
         output_data = output.as_ndarray()
         # compare the precision
-        print(np.array(output_data.tolist()).shape)
-        print(np.array(fw_output[0]).shape)
-        # print(fw_output[0])
-        # print(output_data)
         self.assertEqual(output_data.shape, np.array(fw_output[0]).shape)
-        # tuple(map(tuple, arr))
-        print(len(np.array(fw_output[0]).ravel().tolist()))
-        print(type(output_data.shape))
-        print(type(np.array(fw_output[0]).shape))
         self.assertTrue(
             np.allclose(
                 np.array(fw_output[0]).ravel(), output_data.ravel(),
