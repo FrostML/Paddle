@@ -53,6 +53,7 @@ class TestConvBnFusePrecision(unittest.TestCase):
         # prepare fake data
         data = np.array([i % 255 for i in range(1 * 3 * 100 * 100)]).reshape(
             [1, 3, 100, 100]).astype('float32')
+        print(data)
         inputs = PaddleTensor(data)
         outputs = predictor.run([inputs])
         output = outputs[0]
