@@ -39,7 +39,8 @@ class TestConvBnFusePrecision(unittest.TestCase):
                 filter_size=3,
                 act=None,
                 bias_attr=False)
-            bn_res = fluid.layers.batch_norm(input=conv_res, is_test=True)
+            bn_res = fluid.layers.batch_norm(
+                input=conv_res, is_test=True, name="bn_res")
 
         startup_program.random_seed = 1
         exe.run(startup_program)
@@ -47,13 +48,13 @@ class TestConvBnFusePrecision(unittest.TestCase):
             [1, 3, 100, 100]).astype('float32')
         fw_output = exe.run(train_program,
                             feed={"x": np_x},
-                            fetch_list=[bn_res])
-        print("forward ends. ")
+                            fetch_list=['bn_res'])
+        print(fw_output)
         # save the model
         path = "./tmp/inference_model"
         fluid.io.save_inference_model(
             dirname=path,
-            feeded_var_names=['x'],
+            feeded_var_names=["x"],
             target_vars=[bn_res],
             executor=exe)
         # predictor with conv_bn_fusion
