@@ -48,6 +48,7 @@ class TestConvBnFusePrecision(unittest.TestCase):
         fw_output = exe.run(train_program,
                             feed={"x": np_x},
                             fetch_list=[bn_res])
+        print("forward ends. ")
         # save the model
         path = "./tmp/inference_model"
         fluid.io.save_inference_model(
