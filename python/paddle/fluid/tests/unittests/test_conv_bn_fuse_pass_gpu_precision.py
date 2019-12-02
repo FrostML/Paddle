@@ -61,6 +61,7 @@ class TestConvBnFusePrecision(unittest.TestCase):
         # compare the precision
         print(output_data.shape)
         print(output_data)
+        print(output_data.ravel() == np.array(fw_output[0]).ravel())
         self.assertEqual(output_data.shape, np.array(fw_output[0]).shape)
         self.assertTrue(
             np.allclose(
