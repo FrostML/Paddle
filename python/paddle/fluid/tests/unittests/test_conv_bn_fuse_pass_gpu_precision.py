@@ -48,7 +48,7 @@ class TestConvBnFusePrecision(unittest.TestCase):
             [1, 3, 100, 100]).astype('float32')
         fw_output = exe.run(train_program,
                             feed={"x": np_x},
-                            fetch_list=['bn_res'])
+                            fetch_list=[bn_res])
         print(fw_output)
         # save the model
         path = "./tmp/inference_model"
