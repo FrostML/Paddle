@@ -27,13 +27,22 @@ from paddle.fluid.core import create_paddle_predictor
 class TestConvBnFusePrecision(unittest.TestCase):
     def test_conv_bn_fuse_precision(self):
         # forward process
-        x = fluid.data(name="x", shape=[-1, 3, 100, 100], dtype='float32')
-        conv_res = fluid.layers.conv2d(
-            input=x, num_filters=3, filter_size=3, act=None, bias_attr=False)
-        bn_res = fluid.layers.batch_norm(input=conv_res, is_test=True)
         place = fluid.CUDAPlace(0)
         exe = fluid.Executor(place)
-        exe.run(fluid.default_startup_program())
+        train_program = fluid.Program()
+        startup_program = fluid.Program()
+        with fluid.program_guard(train_program, startup_program):
+            x = fluid.data(name="x", shape=[-1, 3, 100, 100], dtype='float32')
+            conv_res = fluid.layers.conv2d(
+                input=x,
+                num_filters=3,
+                filter_size=3,
+                act=None,
+                bias_attr=False)
+            bn_res = fluid.layers.batch_norm(input=conv_res, is_test=True)
+
+        startup_program.random_seed = 1
+        exe.run(startup_program)
         np_x = np.array([i for i in range(1 * 3 * 100 * 100)]).reshape(
             [1, 3, 100, 100]).astype('float32')
         fw_output = exe.run(feed={"x": np_x}, fetch_list=[bn_res])
