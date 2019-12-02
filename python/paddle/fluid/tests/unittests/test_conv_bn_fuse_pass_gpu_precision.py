@@ -38,37 +38,25 @@ fw_output = exe.run(feed={"x": np_x}, fetch_list=[bn_res])
 class TestConvBnFusePrecision(unittest.TestCase):
     def test_conv_bn_fuse_precision(self):
         # forward process
+        x = fluid.data(name="x", shape=[-1, 3, 100, 100], dtype='float32')
+        conv_res = fluid.layers.conv2d(
+            input=x, num_filters=3, filter_size=3, act=None, bias_attr=False)
+        bn_res = fluid.layers.batch_norm(input=conv_res, is_test=True)
         place = fluid.CUDAPlace(0)
-
         exe = fluid.Executor(place)
-        train_program = fluid.Program()
-        startup_program = fluid.Program()
-        with fluid.program_guard(train_program, startup_program):
-            x = fluid.data(name="x", shape=[-1, 3, 100, 100], dtype='float32')
-            conv_res = fluid.layers.conv2d(
-                input=x,
-                num_filters=3,
-                filter_size=3,
-                act=None,
-                bias_attr=False)
-            bn_res = fluid.layers.batch_norm(input=conv_res, is_test=True)
+        exe.run(fluid.default_startup_program())
+        np_x = np.array([i for i in range(1 * 3 * 100 * 100)]).reshape(
+            [1, 3, 100, 100]).astype('float32')
+        fw_output = exe.run(feed={"x": np_x}, fetch_list=[bn_res])
+        print(fw_output)
 
-            startup_program.random_seed = 1
-            exe.run(startup_program)
-            np_x = np.array([i for i in range(1 * 3 * 100 * 100)]).reshape(
-                [1, 3, 100, 100]).astype('float32')
-            fw_output = exe.run(train_program,
-                                feed={"x": np_x},
-                                fetch_list=[bn_res])
-            print(fw_output)
-
-            # save the model
-            path = "./tmp/inference_model"
-            fluid.io.save_inference_model(
-                dirname=path,
-                feeded_var_names=["x"],
-                target_vars=[bn_res],
-                executor=exe)
+        # save the model
+        path = "./tmp/inference_model"
+        fluid.io.save_inference_model(
+            dirname=path,
+            feeded_var_names=["x"],
+            target_vars=[bn_res],
+            executor=exe)
         # predictor with conv_bn_fusion
         config = AnalysisConfig(path)
         config.enable_use_gpu(100, 0)
