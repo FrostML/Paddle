@@ -22,6 +22,17 @@ from paddle.fluid.core import PaddleTensor
 from paddle.fluid.core import PaddleDType
 from paddle.fluid.core import AnalysisConfig
 from paddle.fluid.core import create_paddle_predictor
+'''
+x = fluid.data(name="x", shape=[-1, 3, 100, 100], dtype='float32')
+conv_res = fluid.layers.conv2d(
+    input=x, num_filters=3, filter_size=3, act=None, bias_attr=False)
+bn_res = fluid.layers.batch_norm(input=conv_res, is_test=True)
+exe = fluid.Executor(place)
+exe.run(fluid.default_startup_program())
+np_x = np.array([i for i in range(1 * 3 * 100 * 100)]).reshape(
+    [1, 3, 100, 100]).astype('float32')
+fw_output = exe.run(feed={"x": np_x}, fetch_list=[bn_res])
+'''
 
 
 class TestConvBnFusePrecision(unittest.TestCase):
@@ -49,25 +60,15 @@ class TestConvBnFusePrecision(unittest.TestCase):
             fw_output = exe.run(train_program,
                                 feed={"x": np_x},
                                 fetch_list=[bn_res])
-        print(fw_output)
-        '''
-        x = fluid.data(name="x", shape=[-1, 3, 100, 100], dtype='float32')
-        conv_res = fluid.layers.conv2d(
-            input=x, num_filters=3, filter_size=3, act=None, bias_attr=False)
-        bn_res = fluid.layers.batch_norm(input=conv_res, is_test=True)
-        exe = fluid.Executor(place)
-        exe.run(fluid.default_startup_program())
-        np_x = np.array([i for i in range(1 * 3 * 100 * 100)]).reshape(
-            [1, 3, 100, 100]).astype('float32')
-        fw_output = exe.run(feed={"x": np_x}, fetch_list=[bn_res])
-        '''
-        # save the model
-        path = "./tmp/inference_model"
-        fluid.io.save_inference_model(
-            dirname=path,
-            feeded_var_names=["x"],
-            target_vars=[bn_res],
-            executor=exe)
+            print(fw_output)
+
+            # save the model
+            path = "./tmp/inference_model"
+            fluid.io.save_inference_model(
+                dirname=path,
+                feeded_var_names=["x"],
+                target_vars=[bn_res],
+                executor=exe)
         # predictor with conv_bn_fusion
         config = AnalysisConfig(path)
         config.enable_use_gpu(100, 0)
