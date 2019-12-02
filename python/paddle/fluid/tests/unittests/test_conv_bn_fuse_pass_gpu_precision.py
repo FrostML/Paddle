@@ -34,7 +34,7 @@ class TestConvBnFusePrecision(unittest.TestCase):
         place = fluid.CUDAPlace(0)
         exe = fluid.Executor(place)
         exe.run(fluid.default_startup_program())
-        np_x = np.array([i for i in range(1 * 3 * 100 * 100)]).reshape(
+        np_x = np.array([i % 255 for i in range(1 * 3 * 100 * 100)]).reshape(
             [1, 3, 100, 100]).astype('float32')
         fw_output = exe.run(feed={"x": np_x}, fetch_list=[bn_res])
         print(fw_output)
@@ -51,7 +51,7 @@ class TestConvBnFusePrecision(unittest.TestCase):
         config.enable_use_gpu(100, 0)
         predictor = create_paddle_predictor(config)
         # prepare fake data
-        data = np.array([i for i in range(1 * 3 * 100 * 100)]).reshape(
+        data = np.array([i % 255 for i in range(1 * 3 * 100 * 100)]).reshape(
             [1, 3, 100, 100]).astype('float32')
         inputs = PaddleTensor(data)
         outputs = predictor.run([inputs])
