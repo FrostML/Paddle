@@ -45,7 +45,9 @@ class TestConvBnFusePrecision(unittest.TestCase):
         exe.run(startup_program)
         np_x = np.array([i for i in range(1 * 3 * 100 * 100)]).reshape(
             [1, 3, 100, 100]).astype('float32')
-        fw_output = exe.run(feed={"x": np_x}, fetch_list=[bn_res])
+        fw_output = exe.run(train_program,
+                            feed={"x": np_x},
+                            fetch_list=[bn_res])
         # save the model
         path = "./tmp/inference_model"
         fluid.io.save_inference_model(
