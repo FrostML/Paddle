@@ -28,7 +28,7 @@ class TestConvBnFusePrecision(unittest.TestCase):
     def test_conv_bn_fuse_precision(self):
         # forward process
         place = fluid.CUDAPlace(0)
-        '''
+
         exe = fluid.Executor(place)
         train_program = fluid.Program()
         startup_program = fluid.Program()
@@ -42,13 +42,13 @@ class TestConvBnFusePrecision(unittest.TestCase):
                 bias_attr=False)
             bn_res = fluid.layers.batch_norm(input=conv_res, is_test=True)
 
-        startup_program.random_seed = 1
-        exe.run(startup_program)
-        np_x = np.array([i for i in range(1 * 3 * 100 * 100)]).reshape(
-            [1, 3, 100, 100]).astype('float32')
-        fw_output = exe.run(train_program,
-                            feed={"x": np_x},
-                            fetch_list=[bn_res])
+            startup_program.random_seed = 1
+            exe.run(startup_program)
+            np_x = np.array([i for i in range(1 * 3 * 100 * 100)]).reshape(
+                [1, 3, 100, 100]).astype('float32')
+            fw_output = exe.run(train_program,
+                                feed={"x": np_x},
+                                fetch_list=[bn_res])
         print(fw_output)
         '''
         x = fluid.data(name="x", shape=[-1, 3, 100, 100], dtype='float32')
@@ -60,6 +60,7 @@ class TestConvBnFusePrecision(unittest.TestCase):
         np_x = np.array([i for i in range(1 * 3 * 100 * 100)]).reshape(
             [1, 3, 100, 100]).astype('float32')
         fw_output = exe.run(feed={"x": np_x}, fetch_list=[bn_res])
+        '''
         # save the model
         path = "./tmp/inference_model"
         fluid.io.save_inference_model(
