@@ -51,9 +51,6 @@ class TestConvBnFusePrecision(unittest.TestCase):
         # predictor with conv_bn_fusion
         config = AnalysisConfig(path)
         config.enable_use_gpu(100, 0)
-        a = config.pass_builder()
-        print(type(a))
-        print(a)
         predictor = create_paddle_predictor(config)
         # prepare fake data
         data = np.array([i % 255 for i in range(1 * 3 * 100 * 100)]).reshape(
