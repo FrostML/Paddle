@@ -35,7 +35,6 @@ from decorator_helper import prog_scope
     "and we can construct symmetric positive-definite matrices in the program")
 class TestCholeskyOp(OpTest):
     def setUp(self):
-        print("set up")
         self.op_type = "cholesky"
         self._input_shape = (2, 32, 32)
         self._upper = True
@@ -45,7 +44,6 @@ class TestCholeskyOp(OpTest):
         ]
         self.root_data = np.random.random(self._input_shape).astype("float64")
         # construct symmetric positive-definite matrice
-        print("np calculate")
         input_data = np.matmul(
             self.root_data, self.root_data.transpose(self.trans_dims)) + 1e-05
         output_data = np.linalg.cholesky(input_data).astype("float64")
@@ -56,18 +54,15 @@ class TestCholeskyOp(OpTest):
         self.outputs = {"Out": output_data}
 
     def test_check_output(self):
-        print("check output")
         self.check_output()
 
     def test_check_grad(self):
-        print("check grad")
         places = [fluid.CPUPlace()]
         if core.is_compiled_with_cuda():
-            print("use cuda")
             places.append(fluid.CUDAPlace(0))
         for p in places:
-            print("cpu? gpu?")
             self.func(p)
+        print("------ends------")
 
     @prog_scope()
     def func(self, place):
